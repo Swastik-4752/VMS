@@ -68,6 +68,8 @@ The SQLite database is created automatically inside the `instance/` folder when 
 
 ## Installation
 
+For a beginner-friendly download and setup guide, see `FRIEND_SETUP_GUIDE.md`.
+
 ### 1. Clone the repository
 
 ```bash
