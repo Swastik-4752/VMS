@@ -164,6 +164,48 @@ instance/volunteer_db.sqlite
 
 This file is ignored by Git because it is generated locally. To reset the database, stop the server, delete the SQLite file, and run the app again.
 
+## Deployment
+
+This project is ready to deploy on Railway and Vercel.
+
+### Railway
+
+Railway is recommended for this project because it runs the Flask app as a normal web service.
+
+1. Push the project to GitHub.
+2. Open Railway and choose `New Project`.
+3. Select `Deploy from GitHub repo`.
+4. Choose this repository.
+5. Add a service variable:
+
+```text
+SECRET_KEY=your-long-random-secret-key
+```
+
+The Railway start command is already configured in `railway.toml`:
+
+```bash
+gunicorn app:app --bind 0.0.0.0:$PORT
+```
+
+For persistent SQLite data on Railway, add a Railway volume to the service. The app automatically uses `RAILWAY_VOLUME_MOUNT_PATH` when Railway provides it.
+
+### Vercel
+
+Vercel can run this Flask app for demo hosting.
+
+1. Push the project to GitHub.
+2. Open Vercel and import the GitHub repository.
+3. Add an environment variable:
+
+```text
+SECRET_KEY=your-long-random-secret-key
+```
+
+4. Deploy the project.
+
+Note: Vercel uses temporary storage for SQLite in this project, so data may reset after deployments or function restarts. Use Railway for a more reliable hosted version.
+
 ## Development Notes
 
 - Main backend code is in `app.py`.

@@ -14,7 +14,20 @@ from models import db, User, Volunteer, Club, Event, Assignment
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'vms_college_secret_key_2024')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///volunteer_db.sqlite'
+
+database_url = os.environ.get('DATABASE_URL')
+if not database_url:
+    volume_path = os.environ.get('RAILWAY_VOLUME_MOUNT_PATH')
+    if volume_path:
+        os.makedirs(volume_path, exist_ok=True)
+        database_path = os.path.join(volume_path, 'volunteer_db.sqlite')
+        database_url = f"sqlite:///{database_path.replace(os.sep, '/')}"
+    elif os.environ.get('VERCEL'):
+        database_url = 'sqlite:////tmp/volunteer_db.sqlite'
+    else:
+        database_url = 'sqlite:///volunteer_db.sqlite'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -183,6 +196,12 @@ def seed_default_admin():
     db.session.add(admin)
     db.session.commit()
     print('[VMS] Default admin user created.')
+
+
+def initialize_database():
+    db.create_all()
+    seed_data()
+    seed_default_admin()
 
 # ---------------------------------------------------------------------------
 # Routes — Auth
@@ -560,9 +579,10 @@ def delete_assignment(aid):
 # Entry point
 # ---------------------------------------------------------------------------
 
+with app.app_context():
+    initialize_database()
+
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        seed_data()
-        seed_default_admin()
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=os.environ.get('FLASK_DEBUG') == '1')
