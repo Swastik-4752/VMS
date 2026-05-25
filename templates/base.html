@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}VMS{% endblock %} - VolunteerHub</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+</head>
+<body>
+
+  {% if session.get('logged_in') %}
+  <header class="navbar">
+    <a class="nav-brand" href="{{ url_for('volunteer_dashboard' if session.get('role') == 'volunteer' else 'dashboard') }}">
+      <span class="brand-logo"><i data-lucide="graduation-cap"></i></span>
+      <span class="brand-name">VolunteerHub</span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav-menu" id="navMenu">
+      {% if session.get('role') == 'admin' %}
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('dashboard') }}"
+             class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <i data-lucide="layout-dashboard"></i> Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('volunteers') }}"
+             class="nav-link {% if request.endpoint in ['volunteers', 'add_volunteer'] %}active{% endif %}">
+            <i data-lucide="users"></i> Volunteers
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('clubs') }}"
+             class="nav-link {% if request.endpoint in ['clubs', 'add_club'] %}active{% endif %}">
+            <i data-lucide="landmark"></i> Clubs
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('events') }}"
+             class="nav-link {% if request.endpoint in ['events', 'add_event'] %}active{% endif %}">
+            <i data-lucide="calendar-days"></i> Events
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('assign') }}"
+             class="nav-link {% if request.endpoint == 'assign' %}active{% endif %}">
+            <i data-lucide="clipboard-list"></i> Assign
+          </a>
+        </li>
+      </ul>
+      {% else %}
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('volunteer_dashboard') }}"
+             class="nav-link {% if request.endpoint == 'volunteer_dashboard' %}active{% endif %}">
+            <i data-lucide="layout-dashboard"></i> My Dashboard
+          </a>
+        </li>
+      </ul>
+      {% endif %}
+
+      <a href="{{ url_for('logout') }}" class="btn-logout">
+        <i data-lucide="log-out"></i> Logout
+      </a>
+    </nav>
+  </header>
+  {% endif %}
+
+  <main class="{% if session.get('logged_in') %}main-content{% else %}main-login{% endif %}">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container" id="flashContainer">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+              <i class="flash-icon" data-lucide="{% if category == 'success' %}circle-check{% else %}circle-alert{% endif %}"></i>
+              {{ message }}
+              <button class="flash-close" onclick="this.parentElement.remove()" aria-label="Close message">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

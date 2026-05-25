@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Add Club{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Add New Club</h2>
+    <p class="page-subtitle">Register a new college club to the system.</p>
+  </div>
+  <a href="{{ url_for('clubs') }}" class="btn btn-secondary"><i data-lucide="arrow-left"></i> Back to Clubs</a>
+</div>
+
+<div class="form-card">
+  <form method="POST" action="{{ url_for('add_club') }}" novalidate>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="name">Club Name <span class="required">*</span></label>
+        <input type="text" id="name" name="name"
+               placeholder="e.g. Tech Club" required />
+      </div>
+      <div class="form-group">
+        <label for="coordinator_name">Coordinator Name</label>
+        <input type="text" id="coordinator_name" name="coordinator_name"
+               placeholder="e.g. Prof. Anita Sharma" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4"
+                placeholder="A brief description of what the club does, its goals, and activities..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary"><i data-lucide="plus"></i> Add Club</button>
+      <a href="{{ url_for('clubs') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

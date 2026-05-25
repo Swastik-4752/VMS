@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Assign Volunteers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Volunteer Assignments</h2>
+    <p class="page-subtitle">Assign volunteers to events and track their hours.</p>
+  </div>
+</div>
+
+{# ── Assignment Form ── #}
+<div class="form-card">
+  <h3 class="form-card-title">Assign a Volunteer to an Event</h3>
+
+  <form method="POST" action="{{ url_for('assign') }}" novalidate>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="volunteer_id">Volunteer <span class="required">*</span></label>
+        <select id="volunteer_id" name="volunteer_id" required>
+          <option value="" disabled selected>Select volunteer</option>
+          {% for v in volunteers %}
+          <option value="{{ v.id }}">{{ v.name }} - {{ v.department or 'N/A' }} (Yr {{ v.year_of_study }})</option>
+          {% endfor %}
+        </select>
+        {% if not volunteers %}
+        <span class="field-hint field-warn"><i data-lucide="triangle-alert"></i> No volunteers found. <a href="{{ url_for('add_volunteer') }}">Add one first.</a></span>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="event_id">Event <span class="required">*</span></label>
+        <select id="event_id" name="event_id" required>
+          <option value="" disabled selected>Select event</option>
+          {% for event in events %}
+          <option value="{{ event.id }}">{{ event.name }} - {{ event.date.strftime('%d %b %Y') }}</option>
+          {% endfor %}
+        </select>
+        {% if not events %}
+        <span class="field-hint field-warn"><i data-lucide="triangle-alert"></i> No events found. <a href="{{ url_for('add_event') }}">Add one first.</a></span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="hours_logged">Hours Logged</label>
+        <input type="number" id="hours_logged" name="hours_logged"
+               value="0" min="0" max="999" step="0.5"
+               placeholder="0" />
+        <span class="field-hint">Enter hours contributed (can update later)</span>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary"
+              {% if not volunteers or not events %}disabled{% endif %}>
+        <i data-lucide="link"></i> Assign Volunteer
+      </button>
+    </div>
+
+  </form>
+</div>
+
+{# ── Assignments Table ── #}
+<div class="section-card" style="margin-top: 2rem;">
+  <div class="section-card-header">
+    <h3>All Assignments
+      <span class="badge badge-blue" style="font-size: 0.75rem; vertical-align: middle;">
+        {{ assignments | length }}
+      </span>
+    </h3>
+    {% if assignments %}
+    <span class="text-muted" style="font-size: 0.85rem;">
+      Total hours: <strong>{{ assignments | sum(attribute='hours_logged') | round(1) }} hrs</strong>
+    </span>
+    {% endif %}
+  </div>
+
+  {% if assignments %}
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Volunteer</th>
+          <th>Event</th>
+          <th>Event Date</th>
+          <th>Hours</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assignments %}
+        <tr>
+          <td class="text-muted">{{ loop.index }}</td>
+          <td>
+            <div class="avatar-row">
+              <span class="avatar">{{ a.volunteer.name[0] }}</span>
+              {{ a.volunteer.name }}
+            </div>
+          </td>
+          <td><strong>{{ a.event.name }}</strong></td>
+          <td>{{ a.event.date.strftime('%d %b %Y') }}</td>
+          <td>{{ a.hours_logged }} hrs</td>
+          <td>
+            <span class="status-badge status-{{ a.status }}">
+              <i data-lucide="{% if a.status == 'completed' %}circle-check{% else %}clock-3{% endif %}"></i>
+              {{ a.status.title() }}
+            </span>
+          </td>
+          <td>
+            <a href="{{ url_for('delete_assignment', aid=a.id) }}"
+               class="btn btn-danger btn-sm"
+               onclick="return confirmDelete('assignment', '{{ a.volunteer.name }} to {{ a.event.name }}')">
+              <i data-lucide="trash-2"></i> Remove
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+  <div class="empty-state-small">
+    <p>No assignments yet. Use the form above to get started.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Clubs{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Clubs</h2>
+    <p class="page-subtitle">{{ clubs | length }} club{{ 's' if clubs | length != 1 }} registered</p>
+  </div>
+  <a href="{{ url_for('add_club') }}" class="btn btn-primary"><i data-lucide="plus"></i> Add Club</a>
+</div>
+
+{% if clubs %}
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Club Name</th>
+        <th>Coordinator</th>
+        <th>Description</th>
+        <th>Events</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for club in clubs %}
+      <tr>
+        <td class="text-muted">{{ loop.index }}</td>
+        <td>
+          <div class="avatar-row">
+            <span class="avatar avatar-purple">{{ club.name[0] }}</span>
+            <strong>{{ club.name }}</strong>
+          </div>
+        </td>
+        <td>{{ club.coordinator_name or '-' }}</td>
+        <td class="text-truncate">{{ club.description or '-' }}</td>
+        <td class="text-center">
+          <span class="badge badge-green">{{ club.events | length }}</span>
+        </td>
+        <td>
+          <a href="{{ url_for('delete_club', cid=club.id) }}"
+             class="btn btn-danger btn-sm"
+             onclick="return confirmDelete('club', '{{ club.name }}')">
+            <i data-lucide="trash-2"></i> Delete
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon"><i data-lucide="landmark"></i></div>
+  <h3>No clubs added yet</h3>
+  <p>Create your first club to start organising events.</p>
+  <a href="{{ url_for('add_club') }}" class="btn btn-primary"><i data-lucide="plus"></i> Add Club</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Volunteers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Volunteers</h2>
+    <p class="page-subtitle">{{ volunteers | length }} volunteer{{ 's' if volunteers | length != 1 }} registered</p>
+  </div>
+  <a href="{{ url_for('add_volunteer') }}" class="btn btn-primary"><i data-lucide="user-plus"></i> Add Volunteer</a>
+</div>
+
+{% if volunteers %}
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Department</th>
+        <th>Year</th>
+        <th>Skills</th>
+        <th>Assignments</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in volunteers %}
+      <tr>
+        <td class="text-muted">{{ loop.index }}</td>
+        <td>
+          <div class="avatar-row">
+            <span class="avatar">{{ v.name[0] }}</span>
+            <strong>{{ v.name }}</strong>
+          </div>
+        </td>
+        <td>{{ v.email }}</td>
+        <td>{{ v.phone or '-' }}</td>
+        <td>{{ v.department or '-' }}</td>
+        <td><span class="badge badge-blue">Yr {{ v.year_of_study }}</span></td>
+        <td>
+          {% if v.skills %}
+            {% for skill in v.skills.split(',') %}
+              <span class="tag">{{ skill.strip() }}</span>
+            {% endfor %}
+          {% else %}
+            <span class="text-muted">-</span>
+          {% endif %}
+        </td>
+        <td class="text-center">{{ v.assignments | length }}</td>
+        <td>
+          <a href="{{ url_for('delete_volunteer', vid=v.id) }}"
+             class="btn btn-danger btn-sm"
+             onclick="return confirmDelete('volunteer', '{{ v.name }}')">
+            <i data-lucide="trash-2"></i> Delete
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon"><i data-lucide="users"></i></div>
+  <h3>No volunteers yet</h3>
+  <p>Start by registering your first volunteer.</p>
+  <a href="{{ url_for('add_volunteer') }}" class="btn btn-primary"><i data-lucide="user-plus"></i> Add Volunteer</a>
+</div>
+{% endif %}
+{% endblock %}

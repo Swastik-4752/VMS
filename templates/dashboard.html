@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Dashboard</h2>
+    <p class="page-subtitle">Welcome back, <strong>{{ session.get('name', 'Admin') }}</strong>. Here is your system overview.</p>
+  </div>
+</div>
+
+{# ── Stat Cards ── #}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon stat-blue"><i data-lucide="users"></i></div>
+    <div class="stat-body">
+      <div class="stat-number">{{ total_volunteers }}</div>
+      <div class="stat-label">Volunteers</div>
+    </div>
+    <a href="{{ url_for('volunteers') }}" class="stat-link">View all</a>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-purple"><i data-lucide="landmark"></i></div>
+    <div class="stat-body">
+      <div class="stat-number">{{ total_clubs }}</div>
+      <div class="stat-label">Clubs</div>
+    </div>
+    <a href="{{ url_for('clubs') }}" class="stat-link">View all</a>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-green"><i data-lucide="calendar-days"></i></div>
+    <div class="stat-body">
+      <div class="stat-number">{{ total_events }}</div>
+      <div class="stat-label">Events</div>
+    </div>
+    <a href="{{ url_for('events') }}" class="stat-link">View all</a>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-orange"><i data-lucide="clipboard-list"></i></div>
+    <div class="stat-body">
+      <div class="stat-number">{{ total_assignments }}</div>
+      <div class="stat-label">Assignments</div>
+    </div>
+    <a href="{{ url_for('assign') }}" class="stat-link">View all</a>
+  </div>
+</div>
+
+{# ── Quick Actions ── #}
+<div class="quick-actions">
+  <h3 class="section-title">Quick Actions</h3>
+  <div class="action-buttons">
+    <a href="{{ url_for('add_volunteer') }}" class="action-btn">
+      <i data-lucide="user-plus"></i> Add Volunteer
+    </a>
+    <a href="{{ url_for('add_club') }}" class="action-btn">
+      <i data-lucide="plus"></i> Add Club
+    </a>
+    <a href="{{ url_for('add_event') }}" class="action-btn">
+      <i data-lucide="calendar-plus"></i> Add Event
+    </a>
+    <a href="{{ url_for('assign') }}" class="action-btn">
+      <i data-lucide="link"></i> Assign Volunteer
+    </a>
+  </div>
+</div>
+
+{# ── Recent Sections ── #}
+<div class="dashboard-grid">
+
+  <div class="section-card">
+    <div class="section-card-header">
+      <h3>Recent Events</h3>
+      <a href="{{ url_for('events') }}" class="see-all">See all</a>
+    </div>
+
+    {% if recent_events %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Date</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in recent_events %}
+        <tr>
+          <td><strong>{{ event.name }}</strong></td>
+          <td>{{ event.date.strftime('%d %b %Y') }}</td>
+          <td>{{ event.location or '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-small">
+      <p>No events yet.</p>
+      <a href="{{ url_for('add_event') }}" class="btn btn-sm btn-primary">Add Event</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="section-card">
+    <div class="section-card-header">
+      <h3>Recent Volunteers</h3>
+      <a href="{{ url_for('volunteers') }}" class="see-all">See all</a>
+    </div>
+
+    {% if recent_volunteers %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Department</th>
+          <th>Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in recent_volunteers %}
+        <tr>
+          <td>
+            <div class="avatar-row">
+              <span class="avatar">{{ v.name[0] }}</span>
+              {{ v.name }}
+            </div>
+          </td>
+          <td>{{ v.department or '-' }}</td>
+          <td>Yr {{ v.year_of_study }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-small">
+      <p>No volunteers yet.</p>
+      <a href="{{ url_for('add_volunteer') }}" class="btn btn-sm btn-primary">Add Volunteer</a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

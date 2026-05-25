@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-card">
+
+    <div class="login-header">
+      <div class="login-logo"><i data-lucide="shield-check"></i></div>
+      <h1>Admin Login</h1>
+      <p>Manage clubs, events, volunteers, and assignments.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('login') }}" class="login-form" novalidate>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Enter admin username"
+          autocomplete="username"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-password-wrap">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter password"
+            autocomplete="current-password"
+            required
+          />
+          <button type="button" class="toggle-pw" onclick="togglePassword('password', this)" title="Show or hide password" aria-label="Show or hide password">
+            <i data-lucide="eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">
+        <i data-lucide="log-in"></i> Sign In
+      </button>
+    </form>
+
+    <div class="auth-links">
+      <a href="{{ url_for('volunteer_login') }}">Volunteer login</a>
+      <span></span>
+      <a href="{{ url_for('signup') }}">Create account</a>
+    </div>
+
+    <div class="login-hint">
+      <span>Default admin:</span>
+      <code>admin</code> / <code>admin123</code>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

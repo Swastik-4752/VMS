@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Events</h2>
+    <p class="page-subtitle">{{ events | length }} event{{ 's' if events | length != 1 }} scheduled</p>
+  </div>
+  <a href="{{ url_for('add_event') }}" class="btn btn-primary"><i data-lucide="calendar-plus"></i> Add Event</a>
+</div>
+
+{% if events %}
+<div class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Event Name</th>
+        <th>Date</th>
+        <th>Location</th>
+        <th>Organised by</th>
+        <th>Volunteers</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for event in events %}
+      <tr>
+        <td class="text-muted">{{ loop.index }}</td>
+        <td><strong>{{ event.name }}</strong></td>
+        <td>
+          <span class="date-cell">
+            <i data-lucide="calendar-days"></i>
+            {{ event.date.strftime('%d %b %Y') }}
+          </span>
+        </td>
+        <td>{{ event.location or '-' }}</td>
+        <td><span class="badge badge-purple">{{ event.club.name }}</span></td>
+        <td class="text-center">
+          <span class="badge badge-blue">{{ event.assignments | length }}</span>
+        </td>
+        <td>
+          <a href="{{ url_for('delete_event', eid=event.id) }}"
+             class="btn btn-danger btn-sm"
+             onclick="return confirmDelete('event', '{{ event.name }}')">
+            <i data-lucide="trash-2"></i> Delete
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon"><i data-lucide="calendar-days"></i></div>
+  <h3>No events scheduled yet</h3>
+  <p>Add your first event to start assigning volunteers.</p>
+  <a href="{{ url_for('add_event') }}" class="btn btn-primary"><i data-lucide="calendar-plus"></i> Add Event</a>
+</div>
+{% endif %}
+{% endblock %}

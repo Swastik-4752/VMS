@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>My Dashboard</h2>
+    <p class="page-subtitle">Welcome, <strong>{{ session.get('name') }}</strong>. Here is your volunteer activity.</p>
+  </div>
+</div>
+
+{% if volunteer %}
+<div class="stats-grid volunteer-stats">
+  <div class="stat-card">
+    <div class="stat-icon stat-blue"><i data-lucide="clipboard-list"></i></div>
+    <div class="stat-body">
+      <div class="stat-number">{{ assignments | length }}</div>
+      <div class="stat-label">Assignments</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-green"><i data-lucide="circle-check"></i></div>
+    <div class="stat-body">
+      <div class="stat-number">{{ completed_count }}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-orange"><i data-lucide="clock-3"></i></div>
+    <div class="stat-body">
+      <div class="stat-number">{{ total_hours | round(1) }}</div>
+      <div class="stat-label">Hours Logged</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-card">
+  <div class="section-card-header">
+    <h3>My Event Assignments</h3>
+    <span class="text-muted">{{ volunteer.department or 'Department not set' }}</span>
+  </div>
+
+  {% if assignments %}
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Date</th>
+          <th>Location</th>
+          <th>Club</th>
+          <th>Hours</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for assignment in assignments %}
+        <tr>
+          <td><strong>{{ assignment.event.name }}</strong></td>
+          <td>
+            <span class="date-cell">
+              <i data-lucide="calendar-days"></i>
+              {{ assignment.event.date.strftime('%d %b %Y') }}
+            </span>
+          </td>
+          <td>{{ assignment.event.location or '-' }}</td>
+          <td><span class="badge badge-purple">{{ assignment.event.club.name }}</span></td>
+          <td>{{ assignment.hours_logged }} hrs</td>
+          <td>
+            <span class="status-badge status-{{ assignment.status }}">
+              <i data-lucide="{% if assignment.status == 'completed' %}circle-check{% else %}clock-3{% endif %}"></i>
+              {{ assignment.status.title() }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state-small">
+    <p>No assignments yet. Please contact your admin after event allocation.</p>
+  </div>
+  {% endif %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon"><i data-lucide="user-round-x"></i></div>
+  <h3>Volunteer profile not linked</h3>
+  <p>Your account exists, but it is not linked to a volunteer profile yet.</p>
+</div>
+{% endif %}
+{% endblock %}
